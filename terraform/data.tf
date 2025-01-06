@@ -1,4 +1,4 @@
-data "aws_subnets" "private_subnets" {
+/*data "aws_subnets" "private_subnets" {
   filter {
     name   = "vpc-id"
     values = [module.vpc.vpc_id]
@@ -18,4 +18,4 @@ data "aws_subnets" "public_subnets" {
     name   = "tag:Name"
     values = ["*public*"] # This matches all subnets with a Name tag
   }
-}
+}*/

@@ -1,4 +1,4 @@
-module "vpc" {
+/*module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
   name = "eks-vpc"
@@ -14,4 +14,4 @@ module "vpc" {
     Terraform = "true"
     Environment = "dev"
   }
-}
+}*/

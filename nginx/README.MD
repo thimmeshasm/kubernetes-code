@@ -2,6 +2,25 @@ kubectl create namespace eks-sample-app
 kubectl exec -it eks-sample-linux-deployment-65b7669776-m6qxz -n eks-sample-app -- /bin/bash
 kubectl get all -n eks-sample-app
 kubectl -n eks-sample-app describe service eks-sample-linux-service
+kubectl get events -n kube-system --sort-by='.metadata.creationTimestamp' | tail -n 10
+kubectl logs -n kube-system aws-load-balancer-controller-7869d5f794-c9t8x
+kubectl delete ingress ingress-service -n eks-sample-app
+{"level":"info","ts":"2025-01-05T20:00:21Z","msg":"version","GitVersion":"v2.11.0","GitCommit":"ba4152c1ba7c75be194d75cf343219d4aeaeb116","BuildDate":"2024-12-12T21:01:50+0000"}
+{"level":"error","ts":"2025-01-05T20:00:26Z","logger":"setup","msg":"unable to initialize AWS cloud","error":"failed to introspect region from EC2Metadata, specify --aws-region instead if EC2Metadata is unavailable: operation error ec2imds: GetRegion, canceled, context deadline exceeded"}
+
+Delete all pods - doesnt delete ingress reosurce
+```
+kubectl delete all --all -n game-2048
+```
+
+kubectl delete ingress -n game-2048 game-service-ingress
+kubectl delete ingress ingress-service -n eks-sample-app
+
+# COnnect to EKS
+```
+aws eks --region us-east-1 update-kubeconfig --name test
+
+```
 # Metadata
 name: The name of the Deployment. In this case, it's eks-sample-linux-deployment.
  
@@ -24,11 +43,73 @@ Tasks
 1. Create EKS cluster simple
     - Install Required Addons
         - CoreDNS
+          CoreDNS provides DNS services within EKS Kubernetes clusters. DNS allows individual containers to easily discover and connect to other containers within the cluster.
+          This add-on is included with every EKS cluster by default.
         - KubeProxy
+            kube-proxy is a network proxy that runs on each node in a Kubernetes cluster. The role of kube-proxy is to reflect the services defined in the cluster and manage the networking rules on a node to allow communications to the pods that back a service.
+            This add-on is included with every EKS cluster by default.
         - VPCCNI
-3. Deploy the nginx service & deployment 
-4. Deploy ALB & create ingress resource
-5. Access the application
+          Amazon EKS supports native VPC networking with the Amazon VPC CNI plugin for Kubernetes. Using this plugin allows Kubernetes pods to have the same IP address inside the pod as they do on the VPC network.
+          We recommend the Amazon VPC CNI plugin for Kubernetes for nodes on Amazon EC2 instances.
+        - EKS Pod Identity Agent
+          Install EKS Pod Identity Agent to use EKS Pod Identity to grant AWS IAM permissions to pods through Kubernetes service accounts.
+          Be sure to install the Amazon EKS Pod Identity Agent add-on prior to creating, editing or deleting Pod Identity associations. This add-on is required for the EKS Pod Identity feature to function properly
+        - Metrics Server
+2. Updating this addons is a user's responsibility
+3. Create a NodeGroup
+4. Deploy nginx sample deployment
+    https://docs.aws.amazon.com/eks/latest/userguide/sample-deployment.html
+     - kubectl create namespace eks-sample-app
+     - kubectl apply -f deploy.yaml
+     - kubectl get pods -o wide -A
+     - Get the IP
+     - kubectl exec -it eks-sample-linux-deployment-65b7669776-m6qxz -n eks-sample-app -- /bin/bash
+     - curl and validate nginx homepage is coming or not
+     - 
+5. Deploy the nginx service
+    - Use ClusterIP for Internal Communication: For services that need to communicate internally, use ClusterIP services. This ensures efficient and secure internal communication.
+    - kubectl apply -f service.yaml
+    - kubectl get all -n eks-sample-app
+6. Deploy ALB (https://docs.aws.amazon.com/eks/latest/userguide/lbc-helm.html)
+    - Create IAM role & policy provided by AWS doc 
+    - Create OIDC Provider (https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html)
+    - kubectl create serviceaccount aws-load-balancer-controller -n kube-system
+    - kubectl annotate serviceaccount aws-load-balancer-controller -n kube-system eks.amazonaws.com/ role-arn=arn:aws:iam::fdfdfd:role/acct-managed/eks-alb-role
+    -  kubectl describe serviceaccount aws-load-balancer-controller -n kube-system
+7. Run Helm COmmands
+        helm repo add eks https://aws.github.io/eks-charts
+        helm repo update eks
+        helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set clusterName=test \
+  --set serviceAccount.create=false \
+  --set region=us-east-1 \
+  --set vpcId=vpc-fdfdfdfd \
+  --set serviceAccount.name=aws-load-balancer-controller
+
+  -  kubectl get deployment -n kube-system aws-load-balancer-controller
+
+8. Deploy ingress resource
+    - kubectl apply -f ingress.yaml
+    - Troubleshoot - 
+       - response error StatusCode: 403, RequestID: d87d4c0c-31b8-483f-859d-6f62dad5d032, api error AccessDenied: Not authorized to perform sts:AssumeRoleWithWebIdentity
+         - Update IAm trust policy
+         - Restart ALB
+    kubectl rollout restart deployment/aws-load-balancer-controller -n kube-system
+       -  Failed build model due to couldn't auto-discover subnets: unable to resolve at least one subnet (0 match VPC and tags: [kubernetes.io/role/elb])
+           - Update one public subnet 
+                 kubernetes.io/role/elb = 1
+           - Delete ingress resource and recreated agaub
+           - Failed build model due to couldn't auto-discover subnets: subnets count less than minimal required count: 1 < 2
+           - Updatethe public subnet - 2
+           - Now it has created ALB on AWS console and all the requires secuirty group in an automated way
+9. DEploy Game sample application also
+   https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html    
+   kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.11.0/docs/examples/2048/2048_full.yaml    
+   
+3. Deploy ALB & create ingress resource
+4. Access the application
+5. Use one ALB for multiple services
 
 Tasks
 1. Create EKS cluster using autoenabled
@@ -44,7 +125,20 @@ Tasks
 
 EKS vs EKS AutoEnabled
 1. Loadbalancer is not required in EKSA
-2. 
+2. Helm The deployed chart doesn’t receive security updates automatically. You need to manually upgrade to a newer chart when it becomes available.
 
 
 
+OutStanding Question/DEMO
+1. Use 1 ALB for multiple services
+2. Ingress resource doesnt tied to specific namespace
+
+
+eksctl create iamserviceaccount \
+  --cluster=my-cluster \
+  --namespace=kube-system \
+  --name=aws-load-balancer-controller \
+  --role-name AmazonEKSLoadBalancerControllerRole \
+  --attach-policy-arn=arn:aws:iam::111122223333:policy/AWSLoadBalancerControllerIAMPolicy \
+  --approve \
+  --dry-run > aws-load-balancer-controller.yaml
