@@ -71,7 +71,27 @@ Tasks
     - kubectl apply -f service.yaml
     - kubectl get all -n eks-sample-app
 6. Deploy ALB (https://docs.aws.amazon.com/eks/latest/userguide/lbc-helm.html)
-    - Create IAM role & policy provided by AWS doc 
+    - Create IAM role & policy provided by AWS doc
+            ```
+            {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Federated": "arn:aws:iam::xxxxxxxx:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/FA064912B8007F5AC4EA4D8D90C1AA36"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+                "StringEquals": {
+                    "oidc.eks.us-east-1.amazonaws.com/id/FA064912B8007F5AC4EA4D8D90C1AA36:aud": "sts.amazonaws.com",
+                    "oidc.eks.us-east-1.amazonaws.com/id/FA064912B8007F5AC4EA4D8D90C1AA36:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
+                }
+            }
+        }
+    ]
+}
+```
     - Create OIDC Provider (https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html)
     - kubectl create serviceaccount aws-load-balancer-controller -n kube-system
     - kubectl annotate serviceaccount aws-load-balancer-controller -n kube-system eks.amazonaws.com/ role-arn=arn:aws:iam::fdfdfd:role/acct-managed/eks-alb-role
@@ -93,7 +113,7 @@ Tasks
     - kubectl apply -f ingress.yaml
     - Troubleshoot - 
        - response error StatusCode: 403, RequestID: d87d4c0c-31b8-483f-859d-6f62dad5d032, api error AccessDenied: Not authorized to perform sts:AssumeRoleWithWebIdentity
-         - Update IAm trust policy
+         - Update IAM trust policy
          - Restart ALB
     kubectl rollout restart deployment/aws-load-balancer-controller -n kube-system
        -  Failed build model due to couldn't auto-discover subnets: unable to resolve at least one subnet (0 match VPC and tags: [kubernetes.io/role/elb])
@@ -111,6 +131,12 @@ Tasks
 4. Access the application
 5. Use one ALB for multiple services
 
+
+# Create Fargate Profile
+1. IAM role
+2. Create Fargate profile using different namespace name
+3. EC2 managed node group and Fargate profile cant have the same namespace ?
+
 Tasks
 1. Create EKS cluster using autoenabled
     - Essential addons are included automatically
@@ -118,8 +144,9 @@ Tasks
 3. Deploy the ingress resource
 4. Access the Application
 5. Deploy the game application
+    test the game application for storage - How does that work
 6. Deploy stateful workload
-7. 
+
 
 
 
@@ -142,3 +169,7 @@ eksctl create iamserviceaccount \
   --attach-policy-arn=arn:aws:iam::111122223333:policy/AWSLoadBalancerControllerIAMPolicy \
   --approve \
   --dry-run > aws-load-balancer-controller.yaml
+
+
+# EKS using Terraform
+https://catalog.us-east-1.prod.workshops.aws/workshops/afee4679-89af-408b-8108-44f5b1065cc7/en-US/500-eks-terraform-workshop/570-observability

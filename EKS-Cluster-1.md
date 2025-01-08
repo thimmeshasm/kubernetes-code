@@ -1,7 +1,15 @@
 ### Video 1: Setting Up the EKS Cluster and Installing Essential Add-ons
 Show the kubernetes architecture diagram and then tell which are AWS responsibility and which is customer's responsibility
+Get the diagram from Kubernetes website and use it
+
 - **Amazon EKS (Elastic Kubernetes Service):**
   - A managed Kubernetes service that makes it easy to run Kubernetes on AWS without needing to install and operate your own Kubernetes control plane or nodes.
+
+Prerequistie
+1. VPC with private and public subnets with proper tagging
+2. IAM role - Cluster IAM role
+
+
 - **CoreDNS:**
   - A DNS server that provides DNS services within EKS Kubernetes clusters, allowing containers to discover and connect to other containers.
   **CoreDNS** is a flexible, extensible DNS server that provides DNS and service discovery within Kubernetes clusters. Here’s a detailed explanation of its purpose and function:
@@ -33,7 +41,7 @@ If you have any more questions or need further clarification, feel free to ask!
   **KubeProxy** is a critical component of Kubernetes responsible for maintaining network rules on each node in the cluster. Here’s a detailed explanation of its purpose and function:
 
 ### Purpose of KubeProxy
-- **Network Proxy:** KubeProxy acts as a network proxy, ensuring that requests to Kubernetes services are properly routed to the appropriate pods[1](https://kodekloud.com/blog/kube-proxy/).
+- **Network Proxy:** KubeProxy acts as a network proxy,ensuring that requests to Kubernetes services are properly routed to the appropriate pods[1](https://kodekloud.com/blog/kube-proxy/).
 - **Load Balancer:** It performs load balancing for network traffic, distributing requests across multiple pods to ensure even load distribution and high availability[2](https://zesty.co/finops-glossary/kubernetes-kube-proxy/).
 - **Service Management:** KubeProxy monitors changes to service objects and their endpoints, translating these changes into actual network rules inside the node[1](https://kodekloud.com/blog/kube-proxy/).
 
