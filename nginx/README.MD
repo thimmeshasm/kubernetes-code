@@ -91,23 +91,59 @@ Tasks
         }
     ]
 }
-```
+
     - Create OIDC Provider (https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html)
-    - kubectl create serviceaccount aws-load-balancer-controller -n kube-system
-    - kubectl annotate serviceaccount aws-load-balancer-controller -n kube-system eks.amazonaws.com/ role-arn=arn:aws:iam::fdfdfd:role/acct-managed/eks-alb-role
-    -  kubectl describe serviceaccount aws-load-balancer-controller -n kube-system
-7. Run Helm COmmands
-        helm repo add eks https://aws.github.io/eks-charts
-        helm repo update eks
-        helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+
+### Create a Service Account
+
+Purpose: This command creates a new service account named aws-load-balancer-controller in the kube-system namespace.
+
+Service Account: A service account in Kubernetes is used to provide an identity for processes that run in a Pod. This identity can be used to access the Kubernetes API and other resources.
+
+```
+    kubectl create serviceaccount aws-load-balancer-controller -n kube-system
+```
+
+### Annotation
+
+Purpose: This command adds an annotation to the aws-load-balancer-controller service account.
+Annotation: Annotations are key-value pairs that can be attached to Kubernetes objects. They are used to store arbitrary metadata.
+
+Role ARN: The annotation eks.amazonaws.com/role-arn specifies the Amazon Resource Name (ARN) of an IAM role. This IAM role grants the necessary permissions for the AWS Load Balancer Controller to interact with AWS resources.
+
+```
+    kubectl annotate serviceaccount aws-load-balancer-controller -n kube-system eks.amazonaws.com/ role-arn=arn:aws:iam::936379345511:role/acct-managed/eks-alb-role
+
+    
+    kubectl describe serviceaccount aws-load-balancer-controller -n kube-system
+
+ ```
+
+Purpose: This command provides detailed information about the aws-load-balancer-controller service account in the kube-system namespace.
+
+Output: The output includes information such as the annotations, secrets, and tokens associated with the service account.
+
+
+
+### Run Helm Commands
+```
+helm repo add eks https://aws.github.io/eks-charts
+helm repo update eks
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system \
   --set clusterName=test \
   --set serviceAccount.create=false \
   --set region=us-east-1 \
-  --set vpcId=vpc-fdfdfdfd \
+  --set vpcId=vpc-0a39e03c2cec4d6f4 \
   --set serviceAccount.name=aws-load-balancer-controller
+```
 
-  -  kubectl get deployment -n kube-system aws-load-balancer-controller
+Check the status
+```
+   kubectl get deployment -n kube-system aws-load-balancer-controller
+```
+
+
 
 8. Deploy ingress resource
     - kubectl apply -f ingress.yaml
