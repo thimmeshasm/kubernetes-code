@@ -112,10 +112,13 @@ Annotation: Annotations are key-value pairs that can be attached to Kubernetes o
 Role ARN: The annotation eks.amazonaws.com/role-arn specifies the Amazon Resource Name (ARN) of an IAM role. This IAM role grants the necessary permissions for the AWS Load Balancer Controller to interact with AWS resources.
 
 ```
-    kubectl annotate serviceaccount aws-load-balancer-controller -n kube-system eks.amazonaws.com/ role-arn=arn:aws:iam::936379345511:role/acct-managed/eks-alb-role
+    kubectl annotate serviceaccount aws-load-balancer-controller -n kube-system eks.amazonaws.com/role-arn=arn:aws:iam::936379345511:role/acct-managed/AmazonEKSLoadBalancerControllerRole
 
     
     kubectl describe serviceaccount aws-load-balancer-controller -n kube-system
+
+        kubectl delete serviceaccount aws-load-balancer-controller -n kube-system
+
 
  ```
 
@@ -123,6 +126,16 @@ Purpose: This command provides detailed information about the aws-load-balancer-
 
 Output: The output includes information such as the annotations, secrets, and tokens associated with the service account.
 
+eksctl
+
+```
+eksctl create iamserviceaccount \
+  --cluster=test \
+  --namespace=kube-system \
+  --name=aws-load-balancer-controller3 \
+  --role-name eks-alb-role3 \
+  --attach-policy-arn=arn:aws:iam::936379345511:policy/eks-alb-policy \
+  --approve
 
 
 ### Run Helm Commands
@@ -143,6 +156,11 @@ Check the status
    kubectl get deployment -n kube-system aws-load-balancer-controller
 ```
 
+```
+helm uninstall aws-load-balancer-controller -n kube-system
+```
+
+kubectl get events -n eks-sample-app --sort-by='.metadata.creationTimestamp' | tail -n 10
 
 
 8. Deploy ingress resource
@@ -209,3 +227,24 @@ eksctl create iamserviceaccount \
 
 # EKS using Terraform
 https://catalog.us-east-1.prod.workshops.aws/workshops/afee4679-89af-408b-8108-44f5b1065cc7/en-US/500-eks-terraform-workshop/570-observability
+
+
+aws sts assume-role-with-web-identity \
+    --role-arn \arn:aws:iam::936379345511:role\AmazonEKSLoadBalancerControllerRole \
+    --role-session-name test-session \
+    --web-identity-token k8s-aws-v1.aHR0cHM6Ly9zdHMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vP0FjdGlvbj1HZXRDYWxsZXJJZGVudGl0eSZWZXJzaW9uPTIwMTEtMDYtMTUmWC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBNVVCRU81SlQ3WE5VRTRGTCUyRjIwMjUwMTEwJTJGdXMtZWFzdC0xJTJGc3RzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNTAxMTBUMDMxMzA1WiZYLUFtei1FeHBpcmVzPTYwJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCUzQngtazhzLWF3cy1pZCZYLUFtei1TaWduYXR1cmU9NmFjYWZjNjM0ODUxYmI0NzUwZTZhNGIyMjhmMTFjMjNjYjUwMjBhYWYxODdmNTZkYTU4MTI1OWZkOGI1YTA3NQ
+
+
+    arn:aws:iam::936379345511:role/acct-managed/AmazonEKSLoadBalancerControllerRole
+
+
+
+    nidhi@Nidhis-MacBook-Air nginx %  kubectl describe serviceaccount aws-load-balancer-controller2 -n kube-system
+Name:                aws-load-balancer-controller2
+Namespace:           kube-system
+Labels:              app.kubernetes.io/managed-by=eksctl
+Annotations:         eks.amazonaws.com/role-arn: arn:aws:iam::936379345511:role/eks-alb-role2
+Image pull secrets:  <none>
+Mountable secrets:   <none>
+Tokens:              <none>
+Events:              <none>

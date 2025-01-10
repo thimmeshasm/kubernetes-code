@@ -1,0 +1,44 @@
+helm repo add eks https://aws.github.io/eks-charts
+helm repo update eks
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set clusterName=test \
+  --set serviceAccount.create=false \
+  --set region=us-east-1 \
+  --set vpcId=vpc-0a39e03c2cec4d6f4 \
+  --set serviceAccount.name=aws-load-balancer-controller2
+```
+
+Check the status
+```
+   kubectl get deployment -n kube-system aws-load-balancer-controller
+```
+
+```
+helm uninstall aws-load-balancer-controller -n kube-system
+```
+
+kubectl get events -n eks-sample-app --sort-by='.metadata.creationTimestamp' | tail -n 10
+
+  kubectl annotate serviceaccount aws-load-balancer-controller -n kube-system eks.amazonaws.com/role-arn=arn:aws:iam::936379345511:role/acct-managed/AmazonEKSLoadBalancerControllerRole
+
+    
+    kubectl describe serviceaccount aws-load-balancer-controller -n kube-system
+
+        kubectl delete serviceaccount aws-load-balancer-controller -n kube-system
+
+
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set clusterName=test \
+  --set serviceAccount.create=false \
+  --set region=us-east-1 \
+  --set vpcId=vpc-0a39e03c2cec4d6f4 \
+  --set serviceAccount.name=aws-load-balancer-controller
+helm uninstall aws-load-balancer-controller -n kube-system
+
+kubectl logs -f deployment/aws-load-balancer-controller -n kube-system
+
+kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
+
+kubectl exec -it aws-load-balancer-controller-577d7f46d5-49w87 -n kube-system -- cat /var/run/secrets/eks.amazonaws.com/serviceaccount/token
