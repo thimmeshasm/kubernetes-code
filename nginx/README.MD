@@ -136,12 +136,18 @@ eksctl create iamserviceaccount \
   --role-name eks-alb-role3 \
   --attach-policy-arn=arn:aws:iam::936379345511:policy/eks-alb-policy \
   --approve
-
+```
 
 ### Run Helm Commands
 ```
 helm repo add eks https://aws.github.io/eks-charts
 helm repo update eks
+```
+
+
+Helm Install command
+
+```
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system \
   --set clusterName=test \
