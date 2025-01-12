@@ -150,7 +150,7 @@ Helm Install command
 ```
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system \
-  --set clusterName=test \
+  --set clusterName=eks \
   --set serviceAccount.create=false \
   --set region=us-east-1 \
   --set vpcId=vpc-0a39e03c2cec4d6f4 \
@@ -234,23 +234,3 @@ eksctl create iamserviceaccount \
 # EKS using Terraform
 https://catalog.us-east-1.prod.workshops.aws/workshops/afee4679-89af-408b-8108-44f5b1065cc7/en-US/500-eks-terraform-workshop/570-observability
 
-
-aws sts assume-role-with-web-identity \
-    --role-arn \arn:aws:iam::936379345511:role\AmazonEKSLoadBalancerControllerRole \
-    --role-session-name test-session \
-    --web-identity-token k8s-aws-v1.aHR0cHM6Ly9zdHMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vP0FjdGlvbj1HZXRDYWxsZXJJZGVudGl0eSZWZXJzaW9uPTIwMTEtMDYtMTUmWC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBNVVCRU81SlQ3WE5VRTRGTCUyRjIwMjUwMTEwJTJGdXMtZWFzdC0xJTJGc3RzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNTAxMTBUMDMxMzA1WiZYLUFtei1FeHBpcmVzPTYwJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCUzQngtazhzLWF3cy1pZCZYLUFtei1TaWduYXR1cmU9NmFjYWZjNjM0ODUxYmI0NzUwZTZhNGIyMjhmMTFjMjNjYjUwMjBhYWYxODdmNTZkYTU4MTI1OWZkOGI1YTA3NQ
-
-
-    arn:aws:iam::936379345511:role/acct-managed/AmazonEKSLoadBalancerControllerRole
-
-
-
-    nidhi@Nidhis-MacBook-Air nginx %  kubectl describe serviceaccount aws-load-balancer-controller2 -n kube-system
-Name:                aws-load-balancer-controller2
-Namespace:           kube-system
-Labels:              app.kubernetes.io/managed-by=eksctl
-Annotations:         eks.amazonaws.com/role-arn: arn:aws:iam::936379345511:role/eks-alb-role2
-Image pull secrets:  <none>
-Mountable secrets:   <none>
-Tokens:              <none>
-Events:              <none>
