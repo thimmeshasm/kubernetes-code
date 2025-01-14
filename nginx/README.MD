@@ -3,11 +3,12 @@ kubectl exec -it eks-sample-linux-deployment-65b7669776-m6qxz -n eks-sample-app 
 kubectl get all -n eks-sample-app
 kubectl -n eks-sample-app describe service eks-sample-linux-service
 kubectl get events -n kube-system --sort-by='.metadata.creationTimestamp' | tail -n 10
-kubectl logs -n kube-system aws-load-balancer-controller-7869d5f794-c9t8x
-kubectl delete ingress ingress-service -n eks-sample-app
+skubectl delete ingress ingress-service -n eks-sample-app
 {"level":"info","ts":"2025-01-05T20:00:21Z","msg":"version","GitVersion":"v2.11.0","GitCommit":"ba4152c1ba7c75be194d75cf343219d4aeaeb116","BuildDate":"2024-12-12T21:01:50+0000"}
 {"level":"error","ts":"2025-01-05T20:00:26Z","logger":"setup","msg":"unable to initialize AWS cloud","error":"failed to introspect region from EC2Metadata, specify --aws-region instead if EC2Metadata is unavailable: operation error ec2imds: GetRegion, canceled, context deadline exceeded"}
 
+
+kubectl get events -n eks-sample-app --sort-by='.metadata.creationTimestamp' | tail -n 10
 Delete all pods - doesnt delete ingress reosurce
 ```
 kubectl delete all --all -n game-2048
@@ -18,7 +19,7 @@ kubectl delete ingress ingress-service -n eks-sample-app
 
 # COnnect to EKS
 ```
-aws eks --region us-east-1 update-kubeconfig --name test
+aws eks --region us-east-1 update-kubeconfig --name adorable-dubstep-creature
 
 ```
 # Metadata
@@ -234,3 +235,9 @@ eksctl create iamserviceaccount \
 # EKS using Terraform
 https://catalog.us-east-1.prod.workshops.aws/workshops/afee4679-89af-408b-8108-44f5b1065cc7/en-US/500-eks-terraform-workshop/570-observability
 
+
+
+### EKS Auto Mode
+Existing EKS Cluster
+1. Deleted Fargate profiles, all pods moved to EC2 Managed Node Group
+2. Deleted EC2 Managed Node Groups
