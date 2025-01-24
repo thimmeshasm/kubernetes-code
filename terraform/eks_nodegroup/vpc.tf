@@ -1,6 +1,5 @@
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
-
   name = "eks-vpc"
   cidr = "11.0.0.0/16"
 
@@ -10,10 +9,7 @@ module "vpc" {
   enable_nat_gateway = true
   single_nat_gateway  = true
   one_nat_gateway_per_az = false
-  tags = {
-    Terraform = "true"
-    Environment = "dev"
-  }
+
   public_subnet_tags = {
      "kubernetes.io/role/elb" = 1
  }
@@ -21,4 +17,8 @@ module "vpc" {
  private_subnet_tags = {
      "kubernetes.io/role/internal-elb" = 1
  }
+  tags = {
+    Terraform = "true"
+    Environment = "dev"
+  }
 }
