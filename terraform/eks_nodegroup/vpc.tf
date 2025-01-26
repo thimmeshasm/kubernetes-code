@@ -1,6 +1,6 @@
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
-  name = "eks-vpc"
+  name = "eks-vpc1"
   cidr = "11.0.0.0/16"
 
   azs             = ["us-east-1a", "us-east-1b", "us-east-1c"]
