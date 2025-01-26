@@ -9,3 +9,6 @@ helm install -f values.yaml retail-store-app oci://public.ecr.aws/aws-containers
 
 kubectl get statefulset retail-store-app-catalog-mysql \
   -o jsonpath='{.spec.volumeClaimTemplates}' | jq .
+
+ndition transitioned, Type: NodeClassReady, Status: Unknown -> False, Reason: NodeClassNotFound, Message: NodeClass not found on cluster
+46s         Normal    Ready                            nodepool/default          
