@@ -4,7 +4,7 @@
 
 # Crash log files
 crash.log
-
+.DS_Store
 # Terraform variables files
 *.tfvars
 *.tfvars.json

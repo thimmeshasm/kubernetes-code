@@ -1,5 +1,6 @@
 
 module "eks" {
+  depends_on = [null_resource.wait_60_seconds]
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.0"
   cluster_name    = "eks-1"
