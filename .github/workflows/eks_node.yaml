@@ -1,10 +1,11 @@
 name: Terraform Deployment
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'terraform/eks_nodegroup/**'
+  workflow_dispatch:
+ # push:
+    #branches:
+    #  - main
+   # paths:
+     # - 'terraform/eks_nodegroup/**'
   pull_request:
     branches:
       - main

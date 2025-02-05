@@ -1,10 +1,11 @@
 name: Terraform Deployment
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'terraform/automode/**'
+  workflow_dispatch:
+  #push:
+ #   branches:
+   #   - main
+   # paths:
+    #  - 'terraform/automode/**'
   pull_request:
     branches:
       - main
