@@ -22,6 +22,6 @@ public class HelloWorldController {
     public String getHelloWorld() {
         String hello = rest.getForObject(helloServiceUrl + "/hello", String.class);
         String world = rest.getForObject(worldServiceUrl + "/world", String.class);
-        return hello + " " + world;
+        return hello + "*****" + world;
     }
 }
