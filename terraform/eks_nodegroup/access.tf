@@ -2,20 +2,20 @@
 1️⃣ Create an IAM Group (eks-admin-group)
 
 This group will contain users who need admin access to EKS.
-2️⃣ Create an IAM Role (eks-admin-role)
+2️⃣ Create an IAM Role (k8s-admin-role)
 
 Allows users in the eks-admin-group to assume this role for EKS admin tasks.
 Trust policy ensures only eks-admin-group members can assume the role.
 3️⃣ Create an IAM Policy (eks-assume-role-policy)
 
-Grants sts:AssumeRole permission for the eks-admin-role.
+Grants sts:AssumeRole permission for the k8s-admin-role.
 Attached to the eks-admin-group, allowing its users to assume the role.
 4️⃣ Register IAM Role with EKS (aws_eks_access_entry)
 
-Associates eks-admin-role with the EKS cluster.
+Associates k8s-admin-role with the EKS cluster.
 5️⃣ Attach EKS Admin Policy (aws_eks_access_policy_association)
 
-Grants eks-admin-role full EKS administrative access
+Grants k8s-admin-role full EKS administrative access
 */
 resource "aws_iam_group" "admin_group" {
   name = "eks-admin-group"

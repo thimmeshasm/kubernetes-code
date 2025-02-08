@@ -1,5 +1,4 @@
 module "eks" {
-  depends_on = [null_resource.wait_60_seconds]
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.31"
   cluster_name    = "eks-automode"
@@ -16,7 +15,7 @@ module "eks" {
    support_type = "STANDARD"
   }
   vpc_id     = module.vpc.vpc_id
-  subnet_ids =  data.aws_subnets.private_subnets.ids
+  subnet_ids = module.vpc.private_subnets
 
   tags = {
     Environment = "dev"
