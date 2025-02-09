@@ -49,3 +49,10 @@ autoscaling
 aws ecr-public get-login-password --region us-east-1 | helm registry login --username AWS --password-stdin public.ecr.aws
 
 helm install -f values.yaml retail-store-app oci://public.ecr.aws/aws-containers/retail-store-sample-chart --version 0.8.3
+
+
+helm install aws-load-balancer-controller aws-load-balancer-controller \
+ --namespace kube-system --set clusterName=eks-1 \ --set region=us-east-1 \
+  --set serviceAccount.create=true \ 
+  --set serviceAccount.name=aws-load-balancer-controller \ 
+  --set serviceAccount.annotations."eks.amazonaws.com/role-arn"="arn:aws:iam::936379345511:role/eks-alb-ingress-controller
