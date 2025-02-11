@@ -13,6 +13,6 @@ terraform {
   backend "s3" {
     region = "us-east-1"
     bucket = "devops4solutions-terraform"
-    key    = "eks_cluster_2.tfstate"
+    key    = "eks_cluster_3.tfstate"
   }
 }
