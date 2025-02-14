@@ -1,0 +1,9 @@
+alertmanager:
+  extraArgs:
+    cluster.advertise-address: "$(POD_IP):9094"
+prometheus:
+  persistence:
+    enabled: true
+    storageClass: "gp3"  # Specify your custom StorageClass here
+    size: 50Gi  # Define the storage size you want
+  
