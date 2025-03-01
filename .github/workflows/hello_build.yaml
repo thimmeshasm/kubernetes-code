@@ -10,7 +10,7 @@ on:
   pull_request:
     branches: [ main ]
     paths:
-      - 'HelloService/**'
+      - 'microservices/HelloService/**'
 jobs:
   build:
      defaults:
@@ -59,6 +59,43 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+  terraform:
+    needs: build
+    name:  Terraform Deployment
+    runs-on: [ ubuntu-latest ]
+    defaults:
+      run:
+        working-directory: ./microservices/HelloService/terraform
+    strategy:
+      max-parallel: 1
+    env:
+      aws_secret_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    - uses: hashicorp/setup-terraform@v1
+      with:
+          terraform_wrapper: false
+    - name: Terraform Init
+      id: init
+      run: |
+        rm -rf .terraform
+        terraform init
+    - name: Terraform Plan
+      id: plan
+      run: |
+        terraform plan
+    - name: Terraform apply
+      if: github.ref == 'refs/heads/main'
+      id: apply
+      run: |
+        terraform apply --auto-approve=true
 
 
 
