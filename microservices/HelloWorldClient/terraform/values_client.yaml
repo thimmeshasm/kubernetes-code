@@ -29,8 +29,8 @@ readinessProbe:
     path: /
     port: http
 env:
-  HELLO_SERVICE_URL: "http://hello.default.svc.cluster.local"
-  WORLD_SERVICE_URL: "http://world.default.svc.cluster.local"
+  HELLO_SERVICE_URL: "http://hello.app1.svc.cluster.local"
+  WORLD_SERVICE_URL: "http://world.app1.svc.cluster.local"
 serviceAccount:
   create: true
   automount: true
